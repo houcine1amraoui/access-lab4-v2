@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <nav>
+      <a href="/">Home</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+
+    <h1>Welcome <%= user.username %></h1>
+    <script>
+      async function logout() {
+        await fetch("/logout", {
+          method: "POST",
+        });
+        window.location.href = "/"; // Redirect to login page
+      }
+      // checkLogin(); // Ensure the user is logged in before loading the page
+    </script>
+  </body>
+</html>

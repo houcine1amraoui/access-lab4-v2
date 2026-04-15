@@ -1,0 +1,36 @@
+html {
+  height: 100%;
+  width: 500px;
+  margin: auto;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 10px;
+}
+
+a {
+  font-size: 30px;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+}

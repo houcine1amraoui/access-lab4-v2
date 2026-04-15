@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/account">My Account</a>
+    </nav>
+
+    <h1>Welcome Admin</h1>
+    <p>Flag: <%= flag %></p>
+    <% users.forEach((user, index) => { %>
+    <p><%= user.username %></p>
+    <button class="delete-btn" data-username="<%= user.username %>">
+      Delete
+    </button>
+    <% }) %>
+  </body>
+  <script>
+    document.querySelectorAll(".delete-btn").forEach((button) => {
+      button.addEventListener("click", async (event) => {
+        const username = event.target.getAttribute("data-username");
+        console.log(username);
+        const response = await fetch(`/delete/${username}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "CSRF-Token": "your_csrf_token_here", // Implement CSRF protection
+          },
+        });
+
+        if (response.ok) {
+          alert(`User ${username} deleted successfully`);
+        } else {
+          alert(`Error deleting user ${username}`);
+        }
+      });
+    });
+  </script>
+</html>
