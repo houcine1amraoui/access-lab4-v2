@@ -14,38 +14,38 @@ function seedUsers() {
 
   // admin
   const adminUsername = generateRandomString(6);
-  const adminEmail = "admin@gmail.com";
   const adminPassword = generateRandomString(6);
 
   // user 1
   const victim1Username = generateRandomString(6);
-  const victim1Email = "victim@gmail.com";
   const victim1Password = generateRandomString(6);
 
   // user 2
   const victim2Username = generateRandomString(6);
-  const victim2Email = "victim2@gmail.com";
   const victim2Password = generateRandomString(6);
 
   userRepo.addUser({
     username: adminUsername,
-    email: adminEmail,
+    email: "admin@gmail.com",
     password: adminPassword,
     role: "admin",
+    roleId: 2,
   });
 
   userRepo.addUser({
     username: victim1Username,
-    email: victim1Email,
+    email: `${victim1Username}@gmail.com`,
     password: victim1Password,
     role: "user",
+    roleId: 1,
   });
 
   userRepo.addUser({
     username: victim2Username,
-    email: victim2Email,
+    email: `${victim2Username}@gmail.com`,
     password: victim2Password,
     role: "user",
+    roleId: 1,
   });
 }
 

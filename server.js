@@ -1,16 +1,21 @@
-const express = require("express");
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
-const path = require("path");
-
-const userRepo = require("./repositories/userRepository.js");
-const e = require("express");
+import express from "express";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+//
+import { fileURLToPath } from "url";
+import path from "path";
+import { seedUsers } from "./utils.js";
+import {
+  deleteUserByUsername,
+  loadUsers,
+  updateUserEmail,
+  updateUserRoleId,
+} from "./db.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-
-// Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Middleware for session handling
@@ -27,13 +32,15 @@ app.use(
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "pages"));
 
+seedUsers();
+
 app.use("/css", express.static(path.resolve(__dirname, "pages", "css")));
 app.use("/js", express.static(path.resolve(__dirname, "pages", "js")));
 // app.use("/robots.txt", express.static(path.resolve(__dirname, "robots.txt")));
 
 // Render dynamic HTML with the first user
 app.get("/", (req, res) => {
-  const users = userRepo.getAllUsers();
+  const users = loadUsers();
   res.render("index", { users: users });
 });
 
@@ -42,38 +49,46 @@ app.get("/login", function (req, res) {
 });
 
 app.get("/account", isAuthenticated, function (req, res) {
-  const user = userRepo.findUser(req.session.user.username);
+  const users = loadUsers();
+  const user = users.find((u) => u.username === req.session.user.username);
   res.render("account", { user: user });
 });
 
 app.get("/admin", isAuthenticated, isAdmin, function (req, res) {
   const flag = "01c409b361fc";
-  const users = userRepo.getAllUsers();
+  const users = loadUsers();
   const nonAdminUsers = users.filter((user) => user.role !== "admin");
   res.render("admin", { users: nonAdminUsers, flag: flag });
 });
 
 app.get("/user-role", isAuthenticated, function (req, res) {
-  const user = userRepo.findUser(req.session.user.username);
+  const users = loadUsers();
+  const user = users.find((u) => u.username === req.session.user.username);
   res.json({ roleId: user.roleId });
 });
 
 app.post("/delete/:username", function (req, res) {
   const { username } = req.params;
-  userRepo.deleteUserByUsername(username);
+  deleteUserByUsername(username);
   return res.send("user deleted");
 });
 
 app.post("/update-email", isAuthenticated, function (req, res) {
   const { newEmail, roleId } = req.body;
   const username = req.session.user.username;
-  userRepo.updateUserEmail(username, newEmail);
+  updateUserEmail(username, newEmail);
   if (roleId) {
-    userRepo.updateUserRoleId(username, roleId);
+    updateUserRoleId(username, roleId);
   }
   //
-  const users = userRepo.getAllUsers();
+  const users = loadUsers();
   const user = users.find((u) => u.username === username);
+  // return res.json({
+  //   username: username,
+  //   email: newEmail,
+  //   apiKey: "gjkjgfgf",
+  //   roleId: user.roleId,
+  // });
   return res.redirect("/account");
 });
 
@@ -87,21 +102,21 @@ function isAuthenticated(req, res, next) {
 
 // authorization middleware
 function isAdmin(req, res, next) {
-  const user = userRepo.findUser(req.session.user.username);
-  const isAdmin = user.role == "admin" ? "true" : "false";
-  if (isAdmin === "false") {
+  const username = req.session.user.username;
+  const users = loadUsers();
+  const user = users.find((u) => u.username === username);
+  if (user.roleId !== 2) {
     return res.redirect("/login");
-  } else if (isAdmin === undefined) {
-    return res.redirect("/login");
-  } else if (isAdmin === "true") {
-    return next();
   }
-  return res.redirect("/login");
+  next();
 }
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const user = userRepo.findUser(username);
+  const users = loadUsers();
+  const user = users.find((user) => {
+    return user.username === username;
+  });
 
   // check username
   if (!user) {
@@ -128,4 +143,7 @@ app.post("/logout", (req, res) => {
   });
 });
 
-module.exports = app;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Lab running on http://localhost:${PORT}`);
+});

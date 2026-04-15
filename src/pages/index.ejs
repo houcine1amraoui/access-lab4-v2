@@ -8,20 +8,48 @@
   </head>
 
   <body>
-    <nav>
+    <nav id="navbar">
       <a href="/">Home</a>
       <a href="/account">My Account</a>
     </nav>
 
     <div class="main">
-      <h1>Task 1: Unprotected admin functionality</h1>
+      <h1>Task 4: User role can be modified in user profile</h1>
       <p>
-        The target web application has an unprotected admin panel. Solve this
-        task by deleting one of the users from the admin panel.
+        This application has an admin panel at <strong>/admin</strong>. It's
+        only accessible to logged-in users with a roleId of 2.
+      </p>
+      <p>
+        Solve the lab by accessing the admin panel and using it to delete one of
+        the users.
+      </p>
+      <p>
+        You can log in to your own account using the following credentials:
+        <strong><%= users[1].username %>:<%= users[1].password %></strong>
       </p>
     </div>
     <br />
 
     <script defer src="./js/script.js"></script>
   </body>
+  <script>
+    async function fetchUserRole() {
+      try {
+        const response = await fetch("/user-role"); // Backend should return { roleId: 2 } if admin
+        const data = await response.json();
+
+        if (data.roleId === 2) {
+          const navbar = document.getElementById("navbar");
+          const adminLink = document.createElement("a");
+          adminLink.href = "/admin";
+          adminLink.textContent = "Admin Panel";
+          navbar.appendChild(adminLink);
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    }
+
+    fetchUserRole();
+  </script>
 </html>

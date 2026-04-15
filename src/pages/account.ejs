@@ -14,6 +14,26 @@
     </nav>
 
     <h1>Welcome <%= user.username %></h1>
+    <p>Your email is <%= user.email %>.</p>
+    <p>Your role is <%= user.role %>.</p>
+    <p>Your roleId is <%= user.roleId %>.</p>
+
+    <div>
+      <h2>Change Email</h2>
+      <form>
+        <input
+          type="email"
+          name="newEmail"
+          id="newEmail"
+          placeholder="New email"
+          required
+        />
+        <button type="button" onclick="handleEmailUpdate(event)">
+          Change Email
+        </button>
+      </form>
+    </div>
+    <script defer src="./js/script.js"></script>
     <script>
       async function logout() {
         await fetch("/logout", {

@@ -26,10 +26,39 @@ async function deleteUserByUsername(username) {
   db.set("users", users).write();
 }
 
+async function updateUserEmail(username, newEmail) {
+  const users = await getAllUsers();
+  const userIndex = users.findIndex((user) => user.username === username);
+  if (userIndex === -1) {
+    throw new Error("User not found");
+  }
+  users[userIndex].email = newEmail;
+  db.set("users", users).write();
+}
+
+async function updateUserRoleId(username, roleId) {
+  const users = await getAllUsers();
+  const userIndex = users.findIndex((user) => user.username === username);
+  if (userIndex === -1) {
+    throw new Error("User not found");
+  }
+  users[userIndex].roleId = roleId;
+  if (roleId === 2) {
+    users[userIndex].role = "admin";
+  } else if (roleId === 1) {
+    users[userIndex].role = "user";
+  } else {
+    users[userIndex].role = "user";
+  }
+  db.set("users", users).write();
+}
+
 module.exports = {
   getAllUsers,
   findUser,
   addUser,
   clearUsers,
   deleteUserByUsername,
+  updateUserEmail,
+  updateUserRoleId,
 };

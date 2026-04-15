@@ -27,3 +27,25 @@ async function handleLogin(event) {
     errorMessageElement.innerText = "An error occurred. Please try again.";
   }
 }
+
+async function handleEmailUpdate(event) {
+  event.preventDefault();
+  const newEmail = document.getElementById("newEmail").value;
+  const errorMessageElement = document.getElementById("email-error-message");
+  // errorMessageElement.innerText = "";
+  try {
+    const response = await fetch("/update-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ newEmail }),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      // errorMessageElement.innerText = data.message;
+    } else {
+      window.location.href = "/account";
+    }
+  } catch (error) {
+    errorMessageElement.innerText = "An error occurred. Please try again.";
+  }
+}
